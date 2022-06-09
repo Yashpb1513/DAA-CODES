@@ -3,5 +3,5 @@
 *.CLASS
 /.CLASS
 /.class
-*.doc
 *.docx
+/.docx
