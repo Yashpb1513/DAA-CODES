@@ -1,174 +1,74 @@
-#include <stdio.h>
-
-#include <conio.h>
-
-#define max 10
-
-
-int w[max], i, j, p[max];
-
-int n, m;
-
-int y[max], x[max], fp = -1, fw;
-
-
-void
-get ()
+#include<stdio.h>
+#define max 100
+ 
+int weight[max];
+int value[max];
+int n,max_weight,max_value;
+ 
+int best_answer[max],answer[max];
+ 
+void print()
 {
-
-  printf ("\n Enter total number of items: ");
-
-  scanf ("%d", &n);
-
-  printf ("\n Enter the Maximum capacity of the Sack: ");
-
-  scanf ("%d", &m);
-
-  for (i = 0; i < n; i++)
-
-    {
-
-      printf ("\n Enter the weight of the item # %d : ", i + 1);
-
-      scanf ("%d", &w[i]);
-
-      printf ("\n Enter the profit of the item # %d : ", i + 1);
-
-      scanf ("%d", &p[i]);
-
-    }
-
+	int i,j,k,l;
+	printf("Max profit : %d\n",max_value);
+	printf("Solution vector : \n");
+	for(i=1;i<=n;i++)
+		printf("%d ",best_answer[i]);
+	printf("\n");
 }
-
-
-void
-show ()
+ 
+void DFS(int level,int current_weight,int current_value)
 {
-
-  float s = 0.0;
-
-  printf ("\n\tItem\tWeight\tCost\tSelected ");
-
-  for (i = 0; i < n; i++)
-
-    printf ("\n\t%d\t%d\t%d\t%d", i + 1, w[i], p[i], x[i]);
-
-  printf ("\n\n The Sack now holds following items : ");
-
-  for (i = 0; i < n; i++)
-
-    if (x[i] == 1)
-
-      {
-
-	printf ("%d\t", i + 1);
-
-	s += (float) p[i] * (float) x[i];
-
-      }
-
-  printf ("\n Maximum Profit: %f ", s);
-
-}
-
-
-float
-limit (float cp, float cw, int k)
-{
-
-  float b = cp;
-
-  float c = cw;
-
-  for (i = k; i <= n; i++)
-
-    {
-
-      c = c + w[i];
-
-      if (c < m)
-
-	b = b + p[i];
-
-      else
-
-	return (b + (1 - (c - m) / (float) w[i]) * p[i]);
-
-    }
-
-  return b;
-
-}
-
-
-void
-knapsack (int k, float cp, float cw)
-{
-
-  if (cw + w[k] <= m)
-
-    {
-
-      y[k] = 1;
-
-      if (k <= n)
-
-	knapsack (k + 1, cp + p[k], cw + w[k]);
-
-      if (((cp + p[k]) > fp) && (k == n))
-
+	if(level>=n+1)
 	{
-
-	  fp = cp + p[k];
-
-	  fw = cw + w[k];
-
-	  for (j = 0; j <= k; j++)
-
-	    x[j] = y[j];
-
+		if(current_value>max_value)
+		{
+			int i;
+			max_value = current_value;
+			for(i=1;i<=n;i++)
+				best_answer[i] = answer[i];
+		}
 	}
-
-    }
-
-  if (limit (cp, cw, k) >= fp)
-
-    {
-
-      y[k] = 0;
-
-      if (k <= n)
-
-	knapsack (k + 1, cp, cw);
-
-      if ((cp > fp) && (k == n))
-
+	else
 	{
-
-	  fp = cp;
-
-	  fw = cw;
-
-	  for (j = 0; j <= k; j++)
-
-	    x[j] = y[j];
-
+		if(current_weight>=weight[level+1])
+		{
+			current_weight = current_weight - weight[level+1];
+			current_value = current_value + value[level+1];
+			answer[level+1] = 1;
+			DFS(level+1,current_weight,current_value);
+			answer[level+1] = 0;
+			current_weight = current_weight + weight[level+1];
+			current_value = current_value - value[level+1];
+		}
+		DFS(level+1,current_weight,current_value);
 	}
-
-    }
-
 }
-
-
-int
-main ()
+ 
+void init()
 {
-
-
-  get ();
-  knapsack (0, 0.0, 0.0);
-
-  show ();
-  return 0;
-
+	int i,j,k,l;
+	max_value = 0;
+	for(i=1;i<=n;i++)
+		answer[i] = 0;
+}
+ 
+int main()
+{
+	int i,j,k,l;
+    printf("Enter the number of items and max weight : \n");
+	scanf("%d%d",&n,&max_weight);
+        printf("Enter weight of items : \n");
+		for(i=1;i<=n;i++)
+			scanf("%d",&weight[i]);
+        printf("Enter value of items : \n");
+		for(j=1;j<=n;j++)
+			scanf("%d",&value[j]);
+		
+		init();
+		
+		DFS(0,max_weight,0);
+		
+		print();
+    return 0;
 }
