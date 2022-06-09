@@ -3,4 +3,4 @@
 *.CLASS
 /.CLASS
 /.class
-/Lab/*.docx
+*.docx
